@@ -31,17 +31,6 @@
  ?: boolean
  */
 
-/**
- * @template <T> type
- * @typedef {function(data: T, pack: Buffer, pos: number)} PythonStruct~PackFunc
- */
-
-/**
- * @template <T> type
- * @typedef {function(data: Buffer, pos: number):T} PythonStruct~UnpackFunc
- */
-/** */
-
 // Maps consist of: size, alignment, unpack function
 
 const UNPACK_STRING = (data, pos, length) => {
@@ -90,18 +79,28 @@ const PACK_INT32_LE = (data, pack, pos) => { pack.writeInt32LE(data, pos, true);
 const PACK_INT32_BE = (data, pack, pos) => { pack.writeInt32BE(data, pos, true); };
 
 /**
+ * @template <T> type
+ * @typedef {function(data: T, pack: Buffer, pos: number)} PackFunc
+ */
+
+/**
+ * @template <T> type
+ * @typedef {function(data: Buffer, pos: number):T} UnpackFunc
+ */
+
+/**
  * @param {Object} options
  * @param {typeof Buffer} options.Buffer
  * @param {boolean} [options.isLittleEndian=true]
  * @param {boolean} [options.is64bit=true]
- * @param {PythonStruct~UnpackFunc<Long>} options.unpackUInt64LE
- * @param {PythonStruct~UnpackFunc<Long>} options.unpackUInt64BE
- * @param {PythonStruct~UnpackFunc<Long>} options.unpackInt64LE
- * @param {PythonStruct~UnpackFunc<Long>} options.unpackInt64BE
- * @param {PythonStruct~PackFunc<Long>} options.packUInt64LE
- * @param {PythonStruct~PackFunc<Long>} options.packUInt64BE
- * @param {PythonStruct~PackFunc<Long>} options.packInt64LE
- * @param {PythonStruct~PackFunc<Long>} options.packInt64BE
+ * @param {UnpackFunc<BigInt>} options.unpackUInt64LE
+ * @param {UnpackFunc<BigInt>} options.unpackUInt64BE
+ * @param {UnpackFunc<BigInt>} options.unpackInt64LE
+ * @param {UnpackFunc<BigInt>} options.unpackInt64BE
+ * @param {PackFunc<BigInt>} options.packUInt64LE
+ * @param {PackFunc<BigInt>} options.packUInt64BE
+ * @param {PackFunc<BigInt>} options.packInt64LE
+ * @param {PackFunc<BigInt>} options.packInt64BE
  */
 function generateClass(options) {
 
@@ -622,4 +621,3 @@ function generateClass(options) {
 }
 
 module.exports = generateClass;
-

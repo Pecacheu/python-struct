@@ -26,9 +26,6 @@
     "url": "https://github.com/danielgindi/node-python-struct/issues"
   },
   "homepage": "https://github.com/danielgindi/node-python-struct",
-  "dependencies": {
-    "long": "^4.0.0"
-  },
   "devDependencies": {
     "eslint": "^6.5.0",
     "husky": "^3.0.7"
