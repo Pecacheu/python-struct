@@ -1,33 +1,43 @@
 {
-  "name": "python-struct",
-  "version": "1.1.2",
-  "description": "Packs/Unpacks/Measures structs according to Python's `struct` format",
-  "main": "src/node_adapter.js",
-  "browser": "src/browser_adapter.js",
-  "scripts": {
-    "lint": "eslint ./",
-    "lint-fix": "eslint --fix ./",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/danielgindi/node-python-struct"
-  },
-  "keywords": [
-    "pack",
-    "unpack",
-    "struct",
-    "cstruct",
-    "python"
-  ],
-  "author": "Daniel Cohen Gindi <danielgindi@gmail.com> (https://github.com/danielgindi)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/danielgindi/node-python-struct/issues"
-  },
-  "homepage": "https://github.com/danielgindi/node-python-struct",
-  "devDependencies": {
-    "eslint": "^6.5.0",
-    "husky": "^3.0.7"
-  }
+	"name": "python-struct",
+	"version": "2.0.0",
+	"description": "Packs/Unpacks/Measures structs according to Python's `struct` format",
+	"main": "src/node_adapter.js",
+	"browser": "src/browser_adapter.js",
+	"type": "module",
+	"scripts": {
+		"lint": "eslint ./",
+		"lint-fix": "eslint --fix ./"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Pecacheu/python-struct"
+	},
+	"keywords": [
+		"pack",
+		"unpack",
+		"struct",
+		"cstruct",
+		"python"
+	],
+	"author": "Daniel Cohen Gindi <danielgindi@gmail.com> (https://github.com/danielgindi)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/danielgindi/node-python-struct/issues"
+	},
+	"homepage": "https://github.com/Pecacheu/python-struct",
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@stylistic/eslint-plugin": "^5.10.0",
+		"@types/node": "^25.5.0",
+		"chalk": "^5.6.2",
+		"eslint": "^10.0.3",
+		"eslint-plugin-simple-import-sort": "^12.1.1",
+		"globals": "^17.4.0",
+		"husky": "^3.0.7",
+		"jiti": "^2.6.1",
+		"terser": "^5.46.1",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.57.1"
+	}
 }
