@@ -1,5 +1,10 @@
-module.exports = require('./core')(Object.assign({
-    Buffer: Buffer,
-    isLittleEndian: require('os').endianness() === 'LE',
-    is64bit: process.arch === 'x64',
-}, require('./long_packers.js')));
+import os from 'os';
+
+import PythonStruct from './core.js';
+
+export * from './core.js';
+
+export default new PythonStruct({
+	isLittleEndian: os.endianness() === 'LE',
+	is64bit: process.arch === 'x64'
+});

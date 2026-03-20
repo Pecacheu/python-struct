@@ -2,12 +2,14 @@
 	"name": "python-struct",
 	"version": "2.0.0",
 	"description": "Packs/Unpacks/Measures structs according to Python's `struct` format",
-	"main": "src/node_adapter.js",
-	"browser": "src/browser_adapter.js",
+	"main": "dist/node_adapter.js",
+	"browser": "dist/browser_adapter.js",
 	"type": "module",
 	"scripts": {
-		"lint": "eslint ./",
-		"lint-fix": "eslint --fix ./"
+		"lint": "eslint",
+		"lint-fix": "eslint --fix",
+		"build": "node build",
+		"prepare": "husky"
 	},
 	"repository": {
 		"type": "git",
@@ -34,7 +36,7 @@
 		"eslint": "^10.0.3",
 		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"globals": "^17.4.0",
-		"husky": "^3.0.7",
+		"husky": "^9.1.7",
 		"jiti": "^2.6.1",
 		"terser": "^5.46.1",
 		"typescript": "^5.9.3",

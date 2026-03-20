@@ -1,0 +1,1 @@
+import e from"./core.js";export*from"./core.js";export default new e({isLittleEndian:"undefined"==typeof Uint8Array||120===new Uint8Array(new Uint32Array([305419896]).buffer)[0],is64bit:"undefined"==typeof navigator||/WOW64|Win64|arm64|ia64|x64;|Mac OS X/i.test(navigator.userAgent)})//# sourceMappingURL=browser_adapter.js.map

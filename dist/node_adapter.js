@@ -1,0 +1,1 @@
+import o from"os";import r from"./core.js";export*from"./core.js";export default new r({isLittleEndian:"LE"===o.endianness(),is64bit:"x64"===process.arch})//# sourceMappingURL=node_adapter.js.map

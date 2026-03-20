@@ -1,0 +1,1 @@
+{"version":3,"names":["PythonStruct","from","isLittleEndian","Uint8Array","Uint32Array","buffer","is64bit","navigator","test","userAgent"],"sources":["../src/browser_adapter.ts"],"mappings":"OAAOA,MAAkB,kBAEzBC,KAAc,2BAEC,IAAID,EAAa,CAC/BE,eAAsC,oBAAfC,YACsC,MAA5D,IAAIA,WAAW,IAAIC,YAAY,CAAC,YAAaC,QAAQ,GACtDC,QAA8B,oBAAdC,WACf,wCAAwCC,KAAKD,UAAUE","ignoreList":[]}

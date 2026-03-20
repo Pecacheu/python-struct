@@ -8,6 +8,7 @@ import tseslint from "typescript-eslint";
 export default defineConfig([
 	{
 		files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+		ignores: ["build.js", "dist/**"],
 		plugins: {js, sty, importSort},
 		extends: [
 			"js/recommended",
@@ -24,8 +25,9 @@ export default defineConfig([
 			"no-empty": ["warn", {allowEmptyCatch: true}],
 			"importSort/imports": "error",
 
-			"@typescript-eslint/no-unused-vars": ["error", {caughtErrors: "none"}],
+			"@typescript-eslint/no-unused-vars": ["warn", {caughtErrors: "none"}],
 			"@typescript-eslint/no-explicit-any": "off",
+			"@typescript-eslint/no-unused-expressions": "off",
 
 			"sty/max-len": ["error", {code: 120}],
 			"sty/linebreak-style": ["error", "unix"],
@@ -44,7 +46,8 @@ export default defineConfig([
 				overrides: {
 					if: {after: false},
 					for: {after: false},
-					while: {after: false}
+					while: {after: false},
+					switch: {after: false}
 				}
 			}],
 			"sty/space-infix-ops": "error",

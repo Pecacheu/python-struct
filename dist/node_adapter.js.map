@@ -1,0 +1,1 @@
+{"version":3,"names":["os","PythonStruct","from","isLittleEndian","endianness","is64bit","process","arch"],"sources":["../src/node_adapter.ts"],"mappings":"OAAOA,MAAQ,YAERC,MAAkB,kBAEzBC,KAAc,2BAEC,IAAID,EAAa,CAC/BE,eAAoC,OAApBH,EAAGI,aACnBC,QAA0B,QAAjBC,QAAQC","ignoreList":[]}
