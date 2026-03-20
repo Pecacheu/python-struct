@@ -1,2 +1,3 @@
 node build
 git update-index --again
+git add dist

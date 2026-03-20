@@ -88,4 +88,7 @@ await run("npx tsc");
 log(C.bgYellow("Minify"));
 await recurse(minify, dist);
 
+log(C.bgYellow("Run Test"));
+await run("node test");
+
 log(C.green("Done!"));

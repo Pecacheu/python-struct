@@ -81,17 +81,17 @@ const packStr: PackFunc<string> = (val, pack, ofs, len, enc) => {
 };
 const unpackStr: UnpackFunc<string> = (data, ofs, len, enc) => {
 	data = data.subarray(ofs, ofs + len);
-	const zero = data.indexOf(0, ofs);
+	const zero = data.indexOf(0);
 	return data.toString(enc as BufferEncoding, 0, zero === -1 ? undefined : zero);
 };
 
 const packPStr: PackFunc<string> = (val, pack, ofs, len, enc) => {
 	if(typeof val !== 'string') throw "Bad type for pascal";
 	const data = Buffer.from(val, enc as BufferEncoding);
-	let size = Math.min(data.length, len - 1, 255);
-	pack[ofs] = size;
+	const size = Math.min(data.length, len - 1, 255);
+	pack[ofs] = size, ++ofs, --len;
 	data.copy(pack, ofs, 0, size);
-	if(++size < len) pack.fill(0, ofs + size, ofs + len);
+	if(size < len) pack.fill(0, ofs + size, ofs + len);
 };
 const unpackPStr: UnpackFunc<string> = (data, ofs, len, enc) =>
 	data.toString(enc as BufferEncoding, ofs + 1, ofs + 1 + Math.min(data[ofs]!, len - 1));
@@ -157,7 +157,7 @@ let Long: typeof import('long');
 //@ts-expect-error import
 try {Long = await import('long')} catch(e) {}
 
-const pack64: PackFunc<bigint | number | string | typeof Long> = (val, pack, ofs, us, le) => {
+const pack64: PackFunc<bigint | number | string | typeof Long> = (val, pack, ofs, _, us, le) => {
 	if(Long && val instanceof Long) {
 		if(le) {
 			pack.writeInt32LE(val.getLowBits(), ofs);
@@ -177,10 +177,9 @@ const pack64: PackFunc<bigint | number | string | typeof Long> = (val, pack, ofs
 		if(us) pack.writeBigUInt64BE(val, ofs); else pack.writeBigInt64BE(val, ofs);
 	}
 };
-const unpack64: UnpackFunc<bigint> = (data, ofs, _, us, le) => {
-	const view = new DataView(data.buffer, ofs);
-	return us ? view.getBigUint64(0, le) : view.getBigInt64(0, le);
-};
+const unpack64: UnpackFunc<bigint> = (data, ofs, _, us, le) => le ?
+	us ? data.readBigUInt64LE(ofs) : data.readBigInt64LE(ofs) :
+	us ? data.readBigUInt64BE(ofs) : data.readBigInt64BE(ofs);
 
 //======== Main Class ========
 
@@ -188,16 +187,15 @@ export class StructError extends Error {}
 
 function err(e: any, i: number, o?: number) {
 	const s = `At ${i} in format${o ? `, ${o} in data` : ''}: ${e}`;
-	if(e instanceof Error) throw new StructError(s,
-		//@ts-expect-error cause
-		e instanceof Error ? {cause: e} : undefined);
+	//@ts-expect-error cause
+	throw new StructError(s, e instanceof Error ? {cause: e} : undefined);
 }
 
 export class PythonStruct {
-	isLE;
-	is64bit;
-	enc;
-	map;
+	readonly isLE;
+	readonly is64bit;
+	readonly enc;
+	readonly map;
 
 	/** Instantiate a struct class with custom overrides */
 	constructor(opts: StructOpts) {
@@ -235,7 +233,7 @@ export class PythonStruct {
 
 	_getType(fmt: string) {
 		let isLE = this.isLE, native, skipOne = true;
-		switch(fmt) {
+		switch(fmt[0]) {
 			case '<': isLE = true; break;
 			case '>': case '!': isLE = false; break;
 			case '=': break;
@@ -254,6 +252,7 @@ export class PythonStruct {
 		try {
 			for(; i < len; ++i) {
 				c = format[i]!;
+				if(c === ' ') continue;
 				if(c >= '0' && c <= '9') {
 					dec = dec === null ? c : dec + c;
 					continue;
@@ -288,6 +287,7 @@ export class PythonStruct {
 		try {
 			for(; i < len; i++) {
 				c = format[i]!;
+				if(c === ' ') continue;
 				if(c >= '0' && c <= '9') {
 					dec = dec === null ? c : dec + c;
 					continue;
@@ -306,7 +306,7 @@ export class PythonStruct {
 
 				//Unpack
 				for(; dec; --dec) {
-					if(ofs + sz >= data.length) throw "Not enough data to unpack";
+					if(ofs + sz > data.length) throw "Not enough data to unpack";
 					if(op[2]) vals.push(op[2](data, ofs, sz, str ? this.enc : op[3]!, isLE!));
 					ofs += sz;
 				}
@@ -328,6 +328,7 @@ export class PythonStruct {
 		try {
 			for(; i < len; i++) {
 				c = format[i]!;
+				if(c === ' ') continue;
 				if(c >= '0' && c <= '9') {
 					dec = dec === null ? c : dec + c;
 					continue;
@@ -346,8 +347,11 @@ export class PythonStruct {
 
 				//Pack
 				for(; dec; --dec) {
-					if(ofs + sz >= data.length) throw "Not enough data to pack";
-					if(op[1]) op[1](data[di++], pack, ofs, sz, str ? this.enc : op[3]!, isLE!);
+					if(op[1]) {
+						if(di >= data.length) throw "Not enough data to pack";
+						op[1](data[di], pack, ofs, sz, str ? this.enc : op[3]!, isLE!);
+						++di;
+					}
 					ofs += sz;
 				}
 				dec = null;

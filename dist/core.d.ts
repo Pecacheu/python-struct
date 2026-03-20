@@ -35,10 +35,10 @@ export type StructOpts = Partial<{
 export declare class StructError extends Error {
 }
 export declare class PythonStruct {
-    isLE: boolean;
-    is64bit: boolean;
-    enc: BufferEncoding;
-    map: {
+    readonly isLE: boolean;
+    readonly is64bit: boolean;
+    readonly enc: BufferEncoding;
+    readonly map: {
         isLittleEndian?: boolean | undefined;
         is64bit?: boolean | undefined;
         encoding?: BufferEncoding | undefined;
