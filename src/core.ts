@@ -41,7 +41,7 @@ Q: unsigned long long (not in native mode unless 'long long' in platform C)
 @param us Unsigned type -OR- encoding for string type
 @param le Little endian */
 export type PackFunc<T> = (val: T, pack: Buffer, ofs: number, len: number,
-	us: boolean | BufferEncoding, le: boolean) => void;
+	us: boolean | BufferEncoding | 'raw', le: boolean) => void;
 
 /** Callback for struct.unpack type
 @param data Unpack buffer
@@ -50,7 +50,7 @@ export type PackFunc<T> = (val: T, pack: Buffer, ofs: number, len: number,
 @param us Unsigned type -OR- encoding for string type
 @param le Little endian */
 export type UnpackFunc<T> = (data: Buffer, ofs: number, len: number,
-	us: boolean | BufferEncoding, le: boolean) => T;
+	us: boolean | BufferEncoding | 'raw', le: boolean) => T;
 
 type CL = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm'
 	| 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | '?';
@@ -68,32 +68,37 @@ export type StructOpts = Partial<{
 	isLittleEndian: boolean;
 	/** If the system is 64-bit */
 	is64bit: boolean;
-	/** String encoding, defaults to `utf8` */
-	encoding: BufferEncoding;
+	/** String encoding, defaults to `utf8`. Use `raw` to return string as Buffer instead */
+	encoding: BufferEncoding | 'raw';
 } & {[k in Char]: PackOpt}>;
 
 //======== Default Pack Methods ========
 
-const packStr: PackFunc<string> = (val, pack, ofs, len, enc) => {
-	if(typeof val !== 'string') throw "Bad type for string";
-	const size = pack.write(val, ofs, len, enc as BufferEncoding);
+const packStr: PackFunc<string | Buffer> = (val, pack, ofs, len, enc) => {
+	const size = val instanceof Buffer ? val.copy(pack, ofs, 0, len) :
+		typeof val === 'string' ? pack.write(val, ofs, len, enc as BufferEncoding) : -1;
+	if(size === -1) throw "Bad type for string";
 	if(size < len) pack.fill(0, ofs + size, ofs + len);
 };
-const unpackStr: UnpackFunc<string> = (data, ofs, len, enc) => {
+const unpackStr: UnpackFunc<string | Buffer> = (data, ofs, len, enc) => {
 	data = data.subarray(ofs, ofs + len);
+	if(enc === 'raw') return data;
 	const zero = data.indexOf(0);
 	return data.toString(enc as BufferEncoding, 0, zero === -1 ? undefined : zero);
 };
 
-const packPStr: PackFunc<string> = (val, pack, ofs, len, enc) => {
-	if(typeof val !== 'string') throw "Bad type for pascal";
-	const data = Buffer.from(val, enc as BufferEncoding);
-	const size = Math.min(data.length, len - 1, 255);
+const packPStr: PackFunc<string | Buffer> = (val, pack, ofs, len, enc) => {
+	if(!(val instanceof Buffer)) {
+		if(typeof val !== 'string') throw "Bad type for pascal";
+		val = Buffer.from(val, enc as BufferEncoding);
+	}
+	const size = Math.min(val.length, len - 1, 255);
 	pack[ofs] = size, ++ofs, --len;
-	data.copy(pack, ofs, 0, size);
+	val.copy(pack, ofs, 0, size);
 	if(size < len) pack.fill(0, ofs + size, ofs + len);
 };
-const unpackPStr: UnpackFunc<string> = (data, ofs, len, enc) =>
+const unpackPStr: UnpackFunc<string | Buffer> = (data, ofs, len, enc) => enc === 'raw' ?
+	data.subarray(ofs + 1, ofs + 1 + Math.min(data[ofs]!, len - 1)) :
 	data.toString(enc as BufferEncoding, ofs + 1, ofs + 1 + Math.min(data[ofs]!, len - 1));
 
 const packChar: PackFunc<string> = (val, pack, ofs) => {

@@ -6,14 +6,14 @@ import { Buffer } from 'buffer';
 @param len Repeat length
 @param us Unsigned type -OR- encoding for string type
 @param le Little endian */
-export type PackFunc<T> = (val: T, pack: Buffer, ofs: number, len: number, us: boolean | BufferEncoding, le: boolean) => void;
+export type PackFunc<T> = (val: T, pack: Buffer, ofs: number, len: number, us: boolean | BufferEncoding | 'raw', le: boolean) => void;
 /** Callback for struct.unpack type
 @param data Unpack buffer
 @param ofs Current offset
 @param len Repeat length
 @param us Unsigned type -OR- encoding for string type
 @param le Little endian */
-export type UnpackFunc<T> = (data: Buffer, ofs: number, len: number, us: boolean | BufferEncoding, le: boolean) => T;
+export type UnpackFunc<T> = (data: Buffer, ofs: number, len: number, us: boolean | BufferEncoding | 'raw', le: boolean) => T;
 type CL = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | '?';
 type Char = CL | Uppercase<CL>;
 type PackOpt = [
@@ -27,8 +27,8 @@ export type StructOpts = Partial<{
     isLittleEndian: boolean;
     /** If the system is 64-bit */
     is64bit: boolean;
-    /** String encoding, defaults to `utf8` */
-    encoding: BufferEncoding;
+    /** String encoding, defaults to `utf8`. Use `raw` to return string as Buffer instead */
+    encoding: BufferEncoding | 'raw';
 } & {
     [k in Char]: PackOpt;
 }>;
@@ -37,11 +37,11 @@ export declare class StructError extends Error {
 export declare class PythonStruct {
     readonly isLE: boolean;
     readonly is64bit: boolean;
-    readonly enc: BufferEncoding;
+    readonly enc: BufferEncoding | "raw";
     readonly map: {
         isLittleEndian?: boolean | undefined;
         is64bit?: boolean | undefined;
-        encoding?: BufferEncoding | undefined;
+        encoding?: BufferEncoding | "raw" | undefined;
         a?: PackOpt | undefined;
         b: PackOpt | (number | PackFunc<number> | UnpackFunc<number>)[];
         c: PackOpt | (number | PackFunc<string> | UnpackFunc<string>)[];
@@ -57,10 +57,10 @@ export declare class PythonStruct {
         m?: PackOpt | undefined;
         n?: PackOpt | undefined;
         o?: PackOpt | undefined;
-        p: PackOpt | (number | PackFunc<string> | UnpackFunc<string>)[];
+        p: PackOpt | (number | PackFunc<string | Buffer<ArrayBufferLike>> | UnpackFunc<string | Buffer<ArrayBufferLike>>)[];
         q: PackOpt | (number | PackFunc<any> | UnpackFunc<bigint>)[];
         r?: PackOpt | undefined;
-        s: PackOpt | (number | PackFunc<string> | UnpackFunc<string>)[];
+        s: PackOpt | (number | PackFunc<string | Buffer<ArrayBufferLike>> | UnpackFunc<string | Buffer<ArrayBufferLike>>)[];
         t?: PackOpt | undefined;
         u?: PackOpt | undefined;
         v?: PackOpt | undefined;
