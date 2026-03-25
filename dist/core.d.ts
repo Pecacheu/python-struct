@@ -17,6 +17,7 @@ export type UnpackFunc<T> = (data: Buffer, ofs: number, len: number, us: boolean
 type CL = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' | '?';
 type Char = CL | Uppercase<CL>;
 type PackOpt = [
+    /** `-1` to mark as a string type */
     size: number,
     pack?: PackFunc<any>,
     unpack?: UnpackFunc<any>,
@@ -38,64 +39,7 @@ export declare class PythonStruct {
     readonly isLE: boolean;
     readonly is64bit: boolean;
     readonly enc: BufferEncoding | "raw";
-    readonly map: {
-        isLittleEndian?: boolean | undefined;
-        is64bit?: boolean | undefined;
-        encoding?: BufferEncoding | "raw" | undefined;
-        a?: PackOpt | undefined;
-        b: PackOpt | (number | PackFunc<number> | UnpackFunc<number>)[];
-        c: PackOpt | (number | PackFunc<string> | UnpackFunc<string>)[];
-        d: PackOpt | (number | PackFunc<number> | UnpackFunc<number>)[];
-        e?: PackOpt | undefined;
-        f: PackOpt | (number | PackFunc<number> | UnpackFunc<number>)[];
-        g?: PackOpt | undefined;
-        h: PackOpt | (number | PackFunc<number> | UnpackFunc<number>)[];
-        i: PackOpt | (number | PackFunc<number> | UnpackFunc<number>)[];
-        j?: PackOpt | undefined;
-        k?: PackOpt | undefined;
-        l: PackOpt | (number | PackFunc<number> | UnpackFunc<number>)[];
-        m?: PackOpt | undefined;
-        n?: PackOpt | undefined;
-        o?: PackOpt | undefined;
-        p: PackOpt | (number | PackFunc<string | Buffer<ArrayBufferLike>> | UnpackFunc<string | Buffer<ArrayBufferLike>>)[];
-        q: PackOpt | (number | PackFunc<any> | UnpackFunc<bigint>)[];
-        r?: PackOpt | undefined;
-        s: PackOpt | (number | PackFunc<string | Buffer<ArrayBufferLike>> | UnpackFunc<string | Buffer<ArrayBufferLike>>)[];
-        t?: PackOpt | undefined;
-        u?: PackOpt | undefined;
-        v?: PackOpt | undefined;
-        w?: PackOpt | undefined;
-        x: PackOpt | number[];
-        y?: PackOpt | undefined;
-        z?: PackOpt | undefined;
-        '?': PackOpt | (number | PackFunc<boolean> | UnpackFunc<boolean>)[];
-        A?: PackOpt | undefined;
-        B: PackOpt | (number | boolean | PackFunc<number> | UnpackFunc<number>)[];
-        C?: PackOpt | undefined;
-        D?: PackOpt | undefined;
-        E?: PackOpt | undefined;
-        F?: PackOpt | undefined;
-        G?: PackOpt | undefined;
-        H: PackOpt | (number | boolean | PackFunc<number> | UnpackFunc<number>)[];
-        I: PackOpt | (number | boolean | PackFunc<number> | UnpackFunc<number>)[];
-        J?: PackOpt | undefined;
-        K?: PackOpt | undefined;
-        L: PackOpt | (number | boolean | PackFunc<number> | UnpackFunc<number>)[];
-        M?: PackOpt | undefined;
-        N?: PackOpt | undefined;
-        O?: PackOpt | undefined;
-        P: PackOpt | (number | PackFunc<number> | UnpackFunc<number> | UnpackFunc<bigint>)[];
-        Q: PackOpt | (number | boolean | PackFunc<any> | UnpackFunc<bigint>)[];
-        R?: PackOpt | undefined;
-        S?: PackOpt | undefined;
-        T?: PackOpt | undefined;
-        U?: PackOpt | undefined;
-        V?: PackOpt | undefined;
-        W?: PackOpt | undefined;
-        X?: PackOpt | undefined;
-        Y?: PackOpt | undefined;
-        Z?: PackOpt | undefined;
-    };
+    readonly map: StructOpts;
     /** Instantiate a struct class with custom overrides */
     constructor(opts: StructOpts);
     _getType(fmt: string): (boolean | undefined)[];

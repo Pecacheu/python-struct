@@ -57,6 +57,7 @@ type CL = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' 
 type Char = CL | Uppercase<CL>;
 
 type PackOpt = [
+	/** `-1` to mark as a string type */
 	size: number,
 	pack?: PackFunc<any>,
 	unpack?: UnpackFunc<any>,
@@ -200,7 +201,7 @@ export class PythonStruct {
 	readonly isLE;
 	readonly is64bit;
 	readonly enc;
-	readonly map;
+	readonly map: StructOpts;
 
 	/** Instantiate a struct class with custom overrides */
 	constructor(opts: StructOpts) {
@@ -210,7 +211,7 @@ export class PythonStruct {
 
 		//Merge opts with defaults
 		this.map = {
-			x: [1],
+			x: [-1],
 			c: [1, packChar, unpackChar],
 			b: [1, pack8, unpack8],
 			B: [1, pack8, unpack8, true],
@@ -222,8 +223,8 @@ export class PythonStruct {
 			L: [4, pack32, unpack32, true],
 			f: [4, packFloat, unpackFloat],
 			d: [8, packDouble, unpackDouble],
-			s: [1, packStr, unpackStr],
-			p: [1, packPStr, unpackPStr],
+			s: [-1, packStr, unpackStr],
+			p: [-1, packPStr, unpackPStr],
 			P: [
 				this.is64bit ? 8 : 4,
 				this.is64bit ? pack64 : pack32,
@@ -264,11 +265,12 @@ export class PythonStruct {
 				}
 
 				op = this.map[c as Char] as PackOpt;
-				if(!op) throw "Bad char in struct format";
+				if(!op) throw `Bad char '${c}' in struct format`;
 
 				//Align if native
 				sz = op[0];
-				if(native) size = Math.ceil(size / sz) * sz;
+				if(sz === -1) sz = 1;
+				else if(native && sz > 1) size = Math.ceil(size / sz) * sz;
 
 				//Update size
 				size += sz * (dec ? Number(dec) : 1);
@@ -306,8 +308,8 @@ export class PythonStruct {
 				if(native && sz > 1) ofs = Math.ceil(ofs / sz) * sz;
 
 				//Check total len
-				dec = dec ? Number(dec) : 1, str = c === 's' || c === 'p';
-				if(str || c === 'x') sz = dec, dec = 1;
+				dec = dec ? Number(dec) : 1, str = sz === -1;
+				if(str) sz = dec, dec = 1;
 
 				//Unpack
 				for(; dec; --dec) {
@@ -347,8 +349,8 @@ export class PythonStruct {
 				if(native && sz > 1) ofs = Math.ceil(ofs / sz) * sz;
 
 				//Check total len
-				dec = dec ? Number(dec) : 1, str = c === 's' || c === 'p';
-				if(str || c === 'x') sz = dec, dec = 1;
+				dec = dec ? Number(dec) : 1, str = sz === -1;
+				if(str) sz = dec, dec = 1;
 
 				//Pack
 				for(; dec; --dec) {
